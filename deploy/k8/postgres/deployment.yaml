@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: locate-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: locate-postgres
+  template:
+    metadata:
+      labels:
+        app: locate-postgres
+        tier: backend
+    spec:
+      containers:
+        - name: locate-postgres
+          image: postgres:11.4
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: locate-postgres-credentials
+                  key: user
+
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: locate-postgres-credentials
+                  key: password
+
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: locate-postgres-credentials
+                  key: db_name
+
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: locate-postgres-volume-mount
+              mountPath: /var/lib/postgresql/data
+
+      volumes:
+        - name: locate-postgres-volume-mount
+          persistentVolumeClaim:
+            claimName: locate-postgres-pvc

@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: locate-api-migrations
+spec:
+  template:
+    spec:
+      containers:
+        - name: locate-api
+          image: urandu/loccate:latest1
+          args: ['python', 'project/manage.py', 'migrate']
+          env:
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: locate-postgres-credentials
+                  key: user
+
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: locate-postgres-credentials
+                  key: password
+
+            - name: DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: locate-postgres-credentials
+                  key: db_name
+
+            - name: DATABASE_SERVICE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: locate-postgres-credentials
+                  key: db_host
+
+
+
+      restartPolicy: Never
+  backoffLimit: 5

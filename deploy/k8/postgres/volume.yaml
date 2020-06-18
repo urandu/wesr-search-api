@@ -1,0 +1,14 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: locate-postgres-pv
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 2Gi
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: /data/locate-postgres-pv
